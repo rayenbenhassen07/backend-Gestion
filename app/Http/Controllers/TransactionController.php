@@ -35,6 +35,8 @@ class TransactionController extends Controller
                 $newGredit -= $request->input('montant');
             }
 
+       
+
             // Create the transaction
             $transaction = Transaction::create([
                 'type' => $request->input('type'),
@@ -42,7 +44,7 @@ class TransactionController extends Controller
                 'designation' => $request->input('designation'),
                 'date' => $request->input('date') ? new \DateTime($request->input('date')) : null,
                 'clientId' => $request->input('clientId'),
-                'currentSoldeCredit' => $client->gredit,
+                'currentSoldeCredit' => $newGredit, // Use the new credit balance here
             ]);
 
             // Update the client's credit balance and other details

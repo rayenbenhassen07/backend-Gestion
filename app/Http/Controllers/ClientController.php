@@ -16,7 +16,7 @@ class ClientController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'num' => 'nullable|string|max:255',
+            'num' => 'nullable|string|max:255|unique:clients,num',
             'credit' => 'required|numeric',
             'designation' => 'nullable|string|max:255',
         ]);

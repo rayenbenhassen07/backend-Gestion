@@ -7,6 +7,7 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\StatisticController;
 use App\Http\Controllers\OldClientInfoController;
 
+
 // Route for testing authenticated requests
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -27,3 +28,6 @@ Route::get('/statistics', [StatisticController::class, 'index']);
 
 // Route for old client info
 Route::get('/old-clients/{oldClientId}', [OldClientInfoController::class, 'show']);
+
+
+
