@@ -35,7 +35,7 @@ class TransactionController extends Controller
             ->first();
 
         // Set the new transaction's starting credit balance
-        $newGredit = $previousTransaction ? $previousTransaction->currentSoldeCredit : $client->gredit;
+        $newGredit = $previousTransaction ? $previousTransaction->currentSoldeCredit : 0;
 
         // Adjust the new credit balance based on the transaction type
         if ($request->input('type') === 'achat') {
@@ -72,10 +72,23 @@ class TransactionController extends Controller
             ]);
         }
 
-        // After updating all transactions, update the client's credit with the latest transaction's credit
+        // Determine the correct date for the client based on the latest "acompte" or oldest "achat"
+        $latestAcompte = Transaction::where('clientId', $client->id)
+            ->where('type', 'acompte')
+            ->orderBy('date', 'desc')
+            ->first();
+
+        $oldestAchat = Transaction::where('clientId', $client->id)
+            ->where('type', 'achat')
+            ->orderBy('date', 'asc')
+            ->first();
+
+        $clientDate = $latestAcompte ? $latestAcompte->date : ($oldestAchat ? $oldestAchat->date : $transactionDate);
+
+        // Update the client's credit and date
         $client->update([
             'gredit' => $newGredit,
-            'date' => $affectedTransactions->last()->date ?? $transactionDate, // Use the latest date
+            'date' => $clientDate,
             'designation' => $request->input('designation'),
         ]);
 
@@ -87,6 +100,8 @@ class TransactionController extends Controller
         return response()->json(['error' => 'Failed to create transaction'], 500);
     }
 }
+
+
 
 
 
