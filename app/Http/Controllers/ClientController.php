@@ -13,42 +13,55 @@ class ClientController extends Controller
      * Store a new client and create a transaction of type "achat".
      */
     public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'num' => 'nullable|string|max:255|unique:clients,num',
-            'credit' => 'required|numeric',
-            'designation' => 'nullable|string|max:255',
+{
+    $request->validate([
+        'name' => 'required|string|max:255|unique:clients,name',
+        'num' => 'nullable|string|max:255|unique:clients,num',
+        'credit' => 'nullable|numeric',
+        'designation' => 'nullable|string|max:255',
+    ], [
+        'name.required' => 'Le nom est obligatoire.',
+        'name.unique' => 'Le nom doit être unique.',
+        'credit.numeric' => 'Le crédit doit être un nombre.',
+        'designation.max' => 'La désignation ne peut pas dépasser 255 caractères.',
+    ]);
+
+    DB::beginTransaction();
+
+    try {
+        // Set credit to 0 if it is null
+        $credit = $request->input('credit') ?? 0;
+
+        // Create a new client
+        $client = Client::create([
+            'name' => $request->input('name'),
+            'num' => $request->input('num'),
+            'gredit' => $credit,
+            'designation' => $request->input('designation'),
         ]);
 
-        DB::beginTransaction();
-
-        try {
-            // Create a new client
-            $client = Client::create([
-                'name' => $request->input('name'),
-                'num' => $request->input('num'),
-                'gredit' => $request->input('credit'),
-                'designation' => $request->input('designation'),
-            ]);
-
-            // Create a transaction for the client
-            $transaction = Transaction::create([
+        // Store a transaction only if credit is not null
+        if ($credit !== 0) {
+            Transaction::create([
                 'type' => 'achat',
-                'montant' => $request->input('credit'),
+                'montant' => $credit,
                 'designation' => $request->input('designation'),
                 'clientId' => $client->id,
                 'currentSoldeCredit' => $client->gredit,
             ]);
-
-            DB::commit();
-
-            return response()->json($client->load('transactions'), 201);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['error' => 'Failed to create client and transaction'], 500);
         }
+
+        DB::commit();
+
+        return response()->json($client->load('transactions'), 201);
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json(['error' => 'Échec de la création du client et de la transaction.'], 500);
     }
+}
+
+
+
 
     /**
      * Fetch clients with their transactions.

@@ -17,6 +17,9 @@ return new class extends Migration
             $table->string('num')->nullable();
             $table->float('gredit')->nullable();
             $table->float('oldCredit')->nullable();
+            $table->float('achat')->nullable();
+            $table->float('accompte')->nullable();
+            $table->float('resteApayer')->nullable();
             $table->string('designation')->nullable();
             $table->timestamp('date')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamps();

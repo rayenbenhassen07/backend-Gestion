@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\StatisticController;
-use App\Http\Controllers\OldClientInfoController;
+
 
 
 // Route for testing authenticated requests
@@ -26,8 +26,6 @@ Route::get('/transactions/{clientId}', [TransactionController::class, 'index']);
 // Route for statistics
 Route::get('/statistics', [StatisticController::class, 'index']);
 
-// Route for old client info
-Route::get('/old-clients/{oldClientId}', [OldClientInfoController::class, 'show']);
 
 
 

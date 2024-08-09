@@ -13,7 +13,9 @@ class Client extends Model
         'name',
         'num',
         'gredit',
-        'oldCredit',
+        'achat',
+        'accompte',
+        'resteApayer',
         'designation',
         'date',
     ];
@@ -22,4 +24,6 @@ class Client extends Model
     {
         return $this->hasMany(Transaction::class, 'clientId');
     }
+
+   
 }

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->timestamp('date')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->unsignedBigInteger('clientId');
             $table->float('currentSoldeCredit')->nullable();
+            $table->boolean('oldTrans')->default(0);
             $table->timestamps();
 
             $table->foreign('clientId')->references('id')->on('clients')->onDelete('cascade');
