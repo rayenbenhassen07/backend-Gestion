@@ -28,6 +28,19 @@ class TransactionController extends Controller
         $client = Client::findOrFail($request->input('clientId'));
         $transactionDate = new \DateTime($request->input('date'));
 
+        // Check if a transaction with the same date and time already exists
+        $existingTransaction = Transaction::where('clientId', $client->id)
+            ->where('date', $transactionDate)
+            ->exists();
+
+        // If a transaction with the same date and time exists, add seconds to make the date unique
+        while ($existingTransaction) {
+            $transactionDate->modify('+1 second');
+            $existingTransaction = Transaction::where('clientId', $client->id)
+                ->where('date', $transactionDate)
+                ->exists();
+        }
+
         // Find the last transaction before the new transaction date
         $previousTransaction = Transaction::where('clientId', $client->id)
             ->where('date', '<=', $transactionDate)
@@ -101,6 +114,7 @@ class TransactionController extends Controller
     }
 }
 
+    
 
 
 
